@@ -22,7 +22,7 @@ function filename(url, width) {
   url = urllib.parse(url);
 
   return path + '/' + url.host +
-         url.path.replace(/\//g, '-') +
+         url.path.replace(/\/$/, '').replace(/\//g, '-') +
          '_' + width + ext;
 }
 
@@ -33,7 +33,7 @@ function filename(url, width) {
  * @return {Promise<page>}
  */
 function open(url, width) {
-  var wait = 2500;
+  var wait = 2000;
 
   return Q.Promise(function (resolve, reject) {
     phantom.create(function (session) {
@@ -59,7 +59,10 @@ function open(url, width) {
 }
 
 function capture(page) {
-  page.render(filename(page.url, page.width));
+  var file = filename(page.url, page.width);
+
+  console.log('capturing', file);
+  page.render(file);
 }
 
 (function main() {
@@ -70,9 +73,7 @@ function capture(page) {
     process.exit(1);
   }
 
-  fs.readFile(file, 'utf8', function (err, data) {
-    if (err) return console.error(err);
-
+  Q.nfcall(fs.readFile, file, 'utf8').then(function (data) {
     var urls = _.compact(data.split("\n")),
         sessions = _.flatten(urls.map(function (url) {
           return breakpoints.map(function (width) {
@@ -86,5 +87,8 @@ function capture(page) {
       pages.forEach(capture);
       process.exit();
     });
+  }).catch(function (e) {
+    console.error(e);
+    process.exit(1);
   });
 })();

@@ -1,15 +1,44 @@
 module.exports = function() {
-  var css = '.cover { position: absolute; z-index: 99999999; width: 100%; height: 100%; top: 0; background: black; opacity: 0.6 }',
-      style = document.createElement('style'),
-      cover = document.createElement('div');
+  var style = document.createElement('style'),
+      cover = document.createElement('div'),
+      css = '.cover { position: absolute; z-index: 99999999; width: 100%; height: 100%; top: 0; background: black; opacity: 0.75 }' +
+            '.ad-slot { position: relative; z-index: 999999999 }' +
+            '.ad-slot-label2 { position: relative; z-index: 9999999999; font-size: 6em; font-weight: bold; background: #D4F1C1; font-family: helvetica,arial,sans-serif; color: #333; text-align: center }';
+
+  function makeClone(slot) {
+    var clone = slot.cloneNode(),
+        rect = slot.getBoundingClientRect();
+
+    clone.classList.add('ad-slot-clone');
+    clone.style.position = 'absolute';
+    clone.style.top = rect.top + 'px';
+    clone.style.left = rect.left + 'px';
+    clone.style.height = slot.clientHeight + 'px';
+
+    return document.getElementsByTagName('body')[0].appendChild(clone);
+  }
+
+  function addLabel(slot) {
+    var label = document.createElement('div');
+
+    label.classList.add('ad-slot-label2');
+    label.innerHTML = slot.dataset.name;
+
+    return slot.appendChild(label);
+  }
 
   style.type = 'text/css';
   style.innerHTML = css;
-
   cover.classList.add('cover');
 
-  console.log('darkening');
+  document.head.appendChild(style);
+  document.body.appendChild(cover);
 
-  document.getElementsByTagName('head')[0].appendChild(style);
-  document.getElementsByTagName('body')[0].appendChild(cover);
+  [].forEach.call(document.body.getElementsByClassName('ad-slot'), function (slot) {
+    if (/inline2/gi.test(slot.className)) {
+      slot = makeClone(slot);
+    }
+
+    addLabel(slot);
+  });
 };

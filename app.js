@@ -14,7 +14,15 @@ var grab = require('./grab'),
   }
 
   Q.nfcall(fs.readFile, file, 'utf8').then(function (data) {
-    return grab(_.compact(data.split("\n")));
+    return grab(_.compact(data.split("\n")), {
+      wait: 4000,
+      cookies: [{
+        'name': '_thunder',
+        'value': '1',
+        'domain': '.theguardian.com'
+      }],
+      script: require('./label')
+    });
   }).then(function () {
     process.exit();
   }).catch(function (e) {

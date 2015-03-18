@@ -4,7 +4,6 @@ var phantom = require('phantom'),
     Q = require('q'),
     _ = require('lodash'),
     urllib = require('url'),
-    label = require('./label'),
     breakpoints = [480, 740, 980];
 
 
@@ -33,12 +32,16 @@ function filename(url, width) {
  * @param  {number} width
  * @return {Promise<page>}
  */
-function open(url, width) {
-  var wait = 2500;
+function open(url, width, options) {
+  var wait = options.wait || 1000;
 
   return Q.Promise(function (resolve, reject) {
     phantom.create(function (session) {
       session.createPage(function (page) {
+        if (options.cookies) {
+          session.set('cookies', options.cookies);
+        }
+
         page.set('viewportSize', { width: width, height: 1000 });
 
         page.open(url, function (status) {
@@ -47,11 +50,14 @@ function open(url, width) {
             return reject();
           }
 
-          page.evaluate(label);
           page.url = url;
           page.width = width;
 
           setTimeout(function () {
+            if (options.script) {
+              page.evaluate(options.script);
+            }
+
             resolve(page);
           }, wait);
         });
@@ -67,13 +73,13 @@ function capture(page) {
   page.render(file);
 }
 
-module.exports = function (urls) {
+module.exports = function (urls, options) {
   var sessions = _.flatten(urls.map(function (url) {
     return breakpoints.map(function (width) {
       return { url: url, width: width };
     });
   })).map(function (capture) {
-    return open(capture.url, capture.width);
+    return open(capture.url, capture.width, options);
   });
 
   return Q.Promise(function (resolve) {

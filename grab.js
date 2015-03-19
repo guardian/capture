@@ -3,9 +3,7 @@
 var phantom = require('phantom'),
     Q = require('q'),
     _ = require('lodash'),
-    urllib = require('url'),
-    breakpoints = [480, 740, 980, 1300];
-
+    urllib = require('url');
 
 /**
  * generate a filename for a screenshot
@@ -74,15 +72,19 @@ function capture(page) {
 }
 
 module.exports = function (urls, options) {
-  var sessions = _.flatten(urls.map(function (url) {
-    return breakpoints.map(function (width) {
-      return { url: url, width: width };
-    });
-  })).map(function (capture) {
-    return open(capture.url, capture.width, options);
-  });
+  return Q.Promise(function (resolve, reject) {
+    if (!options.breakpoints) {
+      return reject(new Error('No breakpoints provided'));
+    }
 
-  return Q.Promise(function (resolve) {
+    var sessions = _.flatten(urls.map(function (url) {
+      return options.breakpoints.map(function (width) {
+        return { url: url, width: width };
+      });
+    })).map(function (capture) {
+      return open(capture.url, capture.width, options);
+    });
+
     Q.all(sessions).done(function (pages) {
       pages.forEach(capture);
       resolve();

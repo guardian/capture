@@ -14,7 +14,8 @@ var grab = require('./grab'),
   }
 
   Q.nfcall(fs.readFile, file, 'utf8').then(function (data) {
-    return grab(_.compact(data.split("\n")), {
+    var options = {
+      breakpoints: [480, 740, 980, 1300],
       wait: 4000,
       cookies: [{
         'name': '_thunder',
@@ -22,7 +23,9 @@ var grab = require('./grab'),
         'domain': '.theguardian.com'
       }],
       script: require('./label')
-    });
+    };
+
+    return grab(_.compact(data.split("\n")), options);
   }).then(function () {
     process.exit();
   }).catch(function (e) {

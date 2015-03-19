@@ -4,7 +4,7 @@ var phantom = require('phantom'),
     Q = require('q'),
     _ = require('lodash'),
     urllib = require('url'),
-    breakpoints = [480, 740, 980];
+    breakpoints = [480, 740, 980, 1300];
 
 
 /**

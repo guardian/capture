@@ -3,7 +3,7 @@ module.exports = function() {
       cover = document.createElement('div'),
       css = '.cover { position: absolute; z-index: 99999999; width: 100%; height: 100%; top: 0; background: black; opacity: 0.75 }' +
             '.ad-slot { position: relative; z-index: 999999999 }' +
-            '.ad-slot-label2 { position: relative; z-index: 9999999999; font-size: 6em; font-weight: bold; background: #D4F1C1; font-family: helvetica,arial,sans-serif; color: #333; text-align: center }';
+            '.ad-slot:after, .ad-slot-clone:after { content: attr(data-name); position: relative; z-index: 9999999999; font-size: 6em; font-weight: bold; background: #D4F1C1; font-family: helvetica,arial,sans-serif; color: #333; text-align: center; display: block }';
 
   function makeClone(slot) {
     var clone = slot.cloneNode(),
@@ -35,10 +35,10 @@ module.exports = function() {
   document.body.appendChild(cover);
 
   [].forEach.call(document.body.getElementsByClassName('ad-slot'), function (slot) {
-    if (/inline2/gi.test(slot.className)) {
+    if (/inline[0-9]/gi.test(slot.className)) {
       slot = makeClone(slot);
     }
 
-    addLabel(slot);
+    // addLabel(slot);
   });
 };

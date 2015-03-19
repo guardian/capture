@@ -26,6 +26,8 @@ var grab = require('./grab'),
     };
 
     return grab(_.compact(data.split("\n")), options);
+  }).progress(function (file) {
+    console.log('capturing', file);
   }).then(function () {
     process.exit();
   }).catch(function (e) {

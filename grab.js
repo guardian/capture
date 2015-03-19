@@ -66,13 +66,12 @@ function open(url, width, options) {
 
 function capture(page) {
   var file = filename(page.url, page.width);
-
-  console.log('capturing', file);
   page.render(file);
+  return file;
 }
 
 module.exports = function (urls, options) {
-  return Q.Promise(function (resolve, reject) {
+  return Q.Promise(function (resolve, reject, notify) {
     if (!options.breakpoints) {
       return reject(new Error('No breakpoints provided'));
     }
@@ -86,7 +85,10 @@ module.exports = function (urls, options) {
     });
 
     Q.all(sessions).done(function (pages) {
-      pages.forEach(capture);
+      pages.forEach(function (page) {
+        notify(capture(page));
+      });
+
       resolve();
     });
   });

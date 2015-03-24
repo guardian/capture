@@ -70,6 +70,18 @@ function capture(page) {
   return file;
 }
 
+function captureBase64(page) {
+  return Q.Promise(function (resolve) {
+    page.renderBase64('PNG', function (data) {
+      resolve({
+        url: page.url,
+        width: page.width,
+        base64: data
+      });
+    });
+  });
+}
+
 module.exports = function (urls, options) {
   return Q.Promise(function (resolve, reject, notify) {
     if (!options.breakpoints) {
@@ -85,6 +97,17 @@ module.exports = function (urls, options) {
     });
 
     Q.all(sessions).done(function (pages) {
+      if (options.base64) {
+        return Q.all(pages.map(captureBase64)).then(function (data) {
+          resolve(urls.map(function (url) {
+            return {
+              url: url,
+              images: data.filter(function (d) { return d.url === url; })
+            };
+          }));
+        });
+      }
+
       pages.forEach(function (page) {
         notify(capture(page));
       });

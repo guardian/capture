@@ -1,0 +1,14 @@
+doctype html
+html
+  head
+    title slot shots
+    link(href='/style.css', rel='stylesheet')
+
+  body
+    each page in pages
+      div.page
+        h2= page.url
+        each image in page.images
+          div.image
+            h3= image.width + 'px'
+            img(src='data:image/png;base64,' + image.base64)

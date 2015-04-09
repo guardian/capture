@@ -4,7 +4,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     _ = require('lodash'),
     stylus = require('stylus'),
-    grab = require('./grab'),
+    grabber = require('./grab'),
     app = express();
 
 app.set('views', './views');
@@ -26,7 +26,7 @@ app.post('/grab', function (req, res) {
         script: require('./label')
       };
 
-  grab(urls, options).then(function (pages) {
+  grabber.grab(urls, options).then(function (pages) {
     res.render('images', { pages: pages });
   });
 });

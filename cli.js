@@ -1,12 +1,14 @@
 'use strict';
 
-var grab = require('./grab'),
+var grabber = require('./grab'),
+    s3 = require('./s3'),
     fs = require('fs'),
     _ = require('lodash'),
-    Q = require('q');
+    Q = require('q'),
+    argv = require('minimist')(process.argv.slice(2));
 
 (function main() {
-  var file = process.argv[2];
+  var file = argv._[0];
 
   if (!file) {
     console.log('please provide a filename');
@@ -22,16 +24,27 @@ var grab = require('./grab'),
         'value': '1',
         'domain': '.theguardian.com'
       }],
-      script: require('./label')
+      script: require('./label'),
+      base64: argv.s3
     };
 
-    return grab(_.compact(data.split("\n")), options);
+    return grabber.grab(_.compact(data.split("\n")), options);
   }).progress(function (file) {
     console.log('capturing', file);
-  }).then(function () {
+  }).then(function (captures) {
+    if (argv.s3 && captures) {
+      return s3.upload(captures).then(function (results) {
+        results.forEach(function (result) {
+          console.log('uploaded', result.Location);
+        });
+
+        process.exit();
+      });
+    }
+
     process.exit();
   }).catch(function (e) {
-    console.error(e);
+    console.error('error:', e.message);
     process.exit(1);
   });
 })();

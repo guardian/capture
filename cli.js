@@ -33,8 +33,11 @@ var grabber = require('./grab'),
     console.log('capturing', file);
   }).then(function (captures) {
     if (argv.aws && captures) {
-      return s3.upload(captures).then(function () {
-        console.log('uploaded');
+      return s3.upload(captures).then(function (results) {
+        results.forEach(function (result) {
+          console.log('uploaded', result.Location);
+        });
+
         process.exit();
       });
     }

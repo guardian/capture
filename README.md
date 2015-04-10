@@ -8,7 +8,7 @@ usage: ```node cli.js [filename]```
 ### uploading to S3
 usage: ```node cli.js [filename] --s3```
 You'll need to be using credentials with access to gu-aws-frontend. If you need to specify a profile other than default, run the app with an AWS_PROFILE variable.
-```AWS_PROFILE=frontend node cli.js urls.txt --aws```
+```AWS_PROFILE=frontend node cli.js urls.txt --s3```
 
 ```filename``` should point to a file with a list of urls to capture.
 

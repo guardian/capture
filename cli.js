@@ -25,14 +25,14 @@ var grabber = require('./grab'),
         'domain': '.theguardian.com'
       }],
       script: require('./label'),
-      base64: argv.aws
+      base64: argv.s3
     };
 
     return grabber.grab(_.compact(data.split("\n")), options);
   }).progress(function (file) {
     console.log('capturing', file);
   }).then(function (captures) {
-    if (argv.aws && captures) {
+    if (argv.s3 && captures) {
       return s3.upload(captures).then(function (results) {
         results.forEach(function (result) {
           console.log('uploaded', result.Location);

@@ -25,8 +25,7 @@ var grabber = require('./grab'),
         'domain': '.theguardian.com'
       }],
       script: require('./label'),
-      base64: argv.aws,
-      debug: argv.debug
+      base64: argv.aws
     };
 
     return grabber.grab(_.compact(data.split("\n")), options);

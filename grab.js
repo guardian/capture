@@ -30,10 +30,10 @@ function filename(url, width, dir) {
  * @return {Promise<page>}
  */
 function open(url, width, options) {
-  var wait = options.wait || 1000;
+  var wait = options.wait || 1000,
 
   return Q.Promise(function (resolve, reject) {
-    phantom.create(function (session) {
+    phantom.create({ onStdout: function () {} }, function (session) {
       session.createPage(function (page) {
         if (options.cookies) {
           session.set('cookies', options.cookies);
@@ -41,7 +41,6 @@ function open(url, width, options) {
 
         page.set('viewportSize', { width: width, height: 1000 });
         page.set('onConsoleMessage', function () {});
-        page.set('onStdout', function () {});
 
         page.open(url, function (status) {
           if (status === 'fail') {

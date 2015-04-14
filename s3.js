@@ -10,11 +10,20 @@ var filename = require('./grab').filename,
       }
     });
 
+
 function upload(captures) {
+  var now = (function() {
+    var d = new Date();
+    return [
+      [d.getFullYear(), _.padLeft(d.getMonth(), 2, 0), d.getDate()].join('-'),
+      [d.getHours(), d.getMinutes()].join('')
+    ].join('-');
+  })();
+
   var uploads = _.flatten(captures.map(function (capture) {
     return capture.images.map(function (image) {
       var buf = new Buffer(image.base64, 'base64'),
-          key = filename(image.url, image.width);
+          key = [now, filename(image.url, image.width)].join('/');
 
       return Q.Promise(function (resolve, reject) {
         s3.upload({

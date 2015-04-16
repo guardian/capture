@@ -8,7 +8,8 @@ var filename = require('./grab').filename,
       params: {
         Bucket: 'slot-shots'
       }
-    });
+    }),
+    url = 'http://slot-shots.s3-website-eu-west-1.amazonaws.com';
 
 
 function upload(captures) {
@@ -39,7 +40,12 @@ function upload(captures) {
     });
   }));
 
-  return Q.all(uploads);
+  return Q.all(uploads).then(function (uploads) {
+    return {
+      url: [url, now].join('/'),
+      uploads: uploads
+    };
+  });
 }
 
 module.exports = {

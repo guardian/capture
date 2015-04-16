@@ -25,23 +25,26 @@ var grabber = require('./grab'),
         'domain': '.theguardian.com'
       }],
       script: require('./label'),
-      base64: argv.s3
+      base64: argv.s3,
+      dir: argv.dir
     };
 
     return grabber.grab(_.compact(data.split("\n")), options);
   }).progress(function (file) {
-    console.log('capturing', file);
-  }).then(function (captures) {
-    if (argv.s3 && captures) {
-      return s3.upload(captures).then(function (results) {
-        results.forEach(function (result) {
-          console.log('uploaded', result.Location);
+    if (argv.v) console.log('capturing', file);
+  }).then(function (data) {
+    if (argv.s3) {
+      return s3.upload(data).then(function (data) {
+        if (argv.v) data.uploads.forEach(function (upload) {
+          console.log('uploaded', upload.Location);
         });
 
+        console.log('Shots uploaded to', data.url);
         process.exit();
       });
     }
 
+    console.log('Shots saved to', [__dirname, data].join('/'));
     process.exit();
   }).catch(function (e) {
     console.error('error:', e.message);

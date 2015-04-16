@@ -2,13 +2,15 @@
 ## cli
 The CLI tool can either save files to disk, or upload to an S3 bucket (currently hardcoded to ```slot-shots```).
 
-### saving to disk
-usage: ```node cli.js [filename]```
+### capturing images
+usage: ```node cli.js [options] [filename]```
 
-### uploading to S3
-usage: ```node cli.js [filename] --s3```
+options:
+  ``` --s3          upload to s3 bucket
+      --dir=name    directory to save to (defaults to 'screenshots')
+      -v            log detailed upload progress ```
 
-You'll need to be using credentials with access to gu-aws-frontend. If you need to specify a profile other than default, run the app with an AWS_PROFILE variable.
+For S3 uploads, you'll need to be using credentials with access to gu-aws-frontend. If you need to specify a profile other than default, run the app with an AWS_PROFILE variable.
 
 ```AWS_PROFILE=frontend node cli.js urls.txt --s3```
 

@@ -64,8 +64,8 @@ function open(url, width, options) {
   });
 }
 
-function capture(page) {
-  var file = filename(page.url, page.width, 'screenshots');
+function capture(page, dir) {
+  var file = filename(page.url, page.width, dir);
   page.render(file);
   return file;
 }
@@ -84,6 +84,8 @@ function captureBase64(page) {
 
 module.exports = {
   grab: function (urls, options) {
+    var dir = options.dir || 'screenshots';
+
     return Q.Promise(function (resolve, reject, notify) {
       if (!options.breakpoints) {
         return reject(new Error('No breakpoints provided'));
@@ -110,10 +112,10 @@ module.exports = {
         }
 
         pages.forEach(function (page) {
-          notify(capture(page));
+          notify(capture(page, dir));
         });
 
-        resolve();
+        resolve(dir);
       });
     });
   },
